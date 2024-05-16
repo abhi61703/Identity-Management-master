@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>1ID</title>
+    <link
+      rel="stylesheet"
+      href="../public/css/bootstrap.min.css"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="../public/css/style.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="../public/css/sweet-alert.css"
+      type="text/css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
+    <script src="../public/js/jquery.js"></script>
+    <script src="../public/js/bootstrap.min.js"></script>
+    <script src="../public/js/sweet-alert.min.js"></script>
+    <script>
+      function ViewDLRequestDetail() {
+        var DLDetailsJSON = localStorage.getItem("DLDetails");
+        console.log("DLDetailsJSON:", DLDetailsJSON); // Log DLDetailsJSON to console
+        if (DLDetailsJSON) {
+          var DLDetails = JSON.parse(DLDetailsJSON);
+          console.log("DLDetails:", DLDetails); // Log DLDetails to console
+          var requestInfoJSON = localStorage.getItem("requestInfo");
+          console.log("requestInfoJSON:", requestInfoJSON); // Log requestInfoJSON to console
+          if (requestInfoJSON) {
+            var requestInfo = JSON.parse(requestInfoJSON);
+            console.log("requestInfo:", requestInfo); // Log requestInfo to console
+            // Fetch details only for fields marked as "1" in requestInfo
+            if (requestInfo["DL_No"] === 1) {
+              document.getElementById("dl_no").innerText = DLDetails.DL_No;
+            }
+            if (requestInfo["DL_Name"] === 1) {
+              document.getElementById("dl_name").innerText = DLDetails.DL_Name;
+            }
+            if (requestInfo["DL_DOB"] === 1) {
+              document.getElementById("dl_dob").innerText = DLDetails.DL_DOB;
+            }
+            if (requestInfo["DL_Address"] === 1) {
+              document.getElementById("dl_address").innerText =
+                DLDetails.DL_Address;
+            }
+          } else {
+            console.error("requestInfo not found in local storage.");
+            swal("Error", "requestInfo not found in local storage.", "error");
+          }
+        } else {
+          console.error("DLDetails not found in local storage.");
+          swal("Error", "DLDetails not found in local storage.", "error");
+        }
+      }
+    </script>
+  </head>
+  <body id="page-top">
+    <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle collapsed"
+            data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <img src="../public/img/1ID-logo.png" />
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a class="page-scroll" href="/">Home</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="container container_body">
+      <div class="row">
+        <div class="col-md-6 center-block">
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">View Access Request</h3>
+            </div>
+            <div class="panel-body">
+              <!-- Button to trigger ViewDLRequestDetail function -->
+              <button
+                type="button"
+                class="btn btn-primary"
+                onclick="ViewDLRequestDetail()"
+              >
+                View DL Request Detail
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 center-block">
+          <!-- Placeholder for requested document details -->
+          <div class="panel panel-info">
+            <div class="panel-heading">
+              <h3 class="panel-title">Requested Document Details</h3>
+            </div>
+            <div class="panel-body">
+              <p><strong>DL No:</strong> <span id="dl_no"></span></p>
+              <p><strong>DL Name:</strong> <span id="dl_name"></span></p>
+              <p><strong>DL DOB:</strong> <span id="dl_dob"></span></p>
+              <p><strong>DL Address:</strong> <span id="dl_address"></span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="navbar-fixed-bottom">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-center">
+            <!-- <div class="footer-copyright">&copy; 2024 1ID</div> -->
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

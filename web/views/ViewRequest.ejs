@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>1ID</title>
+
+    <link rel="stylesheet" href="../public/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../public/css/style.css" type="text/css" />
+    <link rel="stylesheet" href="../public/css/sweet-alert.css" type="text/css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.0/web3.min.js"></script>
+    <script src="../public/js/jquery.js"></script>
+    <script src="../public/js/bootstrap.min.js"></script>
+    <script src="../public/js/sweet-alert.min.js"></script>
+
+    <script>
+        var UserAddress = "";
+
+        window.addEventListener("load", async () => {
+            if (window.ethereum) {
+                window.web3 = new Web3(ethereum);
+                try {
+                    await ethereum.enable();
+                    UserAddress = ethereum.selectedAddress;
+                    console.log("User address:", UserAddress);
+                    //ViewDLRequestLength();
+                    var requestedBy = requestInfo.requestedBy; // Assuming requestedBy is a property in the requestInfo object
+                    var approvalStatus = "Waiting Approval"; // Example approval status
+
+                    // Add a new row to the table with the retrieved data
+                    addNewRow(requestedBy, approvalStatus);
+                } catch (error) {
+                    console.error("Error:", error);
+                    alert("User denied account access...");
+                }
+            } else if (window.web3) {
+                window.web3 = new Web3(web3.currentProvider);
+                UserAddress = web3.eth.coinbase;
+                console.log("User address:", UserAddress);
+                // ViewDLRequestLength();
+            } else {
+                alert(
+                    "Non-Ethereum browser detected. You should consider trying MetaMask!"
+                );
+            }
+        });
+
+        // Function to retrieve requestInfo from local storage
+        function getRequestInfo() {
+            var requestInfoJSON = localStorage.getItem("requestInfo");
+            if (requestInfoJSON) {
+                return JSON.parse(requestInfoJSON);
+            }
+            return null;
+        }
+        var requestInfo = getRequestInfo();
+
+        // Function to add a new row to the table
+        function addNewRow(requestedBy, approvalStatus) {
+            var requestlistparent = document.getElementById("requestlistparent");
+            var newRow = document.createElement("tr");
+
+            // Institution Name
+            var tdInstitutionName = document.createElement("td");
+            var requestInfo = getRequestInfo();
+            if (requestInfo) {
+                tdInstitutionName.textContent = requestInfo["requestedBy"];
+            } else {
+                tdInstitutionName.textContent = "Unknown";
+            }
+            newRow.appendChild(tdInstitutionName);
+
+            // Approval Status
+            var tdApprovalStatus = document.createElement("td");
+            tdApprovalStatus.textContent = approvalStatus;
+            tdApprovalStatus.setAttribute("id", "approval_status"); // Add an ID for easier access
+            newRow.appendChild(tdApprovalStatus);
+
+            // Action Buttons
+            var tdActions = document.createElement("td");
+            var actionRow = document.createElement("tr");
+            actionRow.setAttribute("id", "action_row");
+
+            var approveButton = document.createElement("button");
+            approveButton.setAttribute("type", "button");
+            approveButton.setAttribute("class", "btn btn-sm btn-success");
+            approveButton.textContent = "Approve";
+            approveButton.onclick = function () {
+                approveRequest();
+            };
+            tdActions.appendChild(approveButton);
+
+            var rejectButton = document.createElement("button");
+            rejectButton.setAttribute("type", "button");
+            rejectButton.setAttribute("class", "btn btn-sm btn-danger");
+            rejectButton.textContent = "Reject";
+            rejectButton.onclick = function () {
+                rejectRequest();
+            };
+            tdActions.appendChild(rejectButton);
+
+            actionRow.appendChild(tdActions);
+            newRow.appendChild(actionRow);
+
+            requestlistparent.appendChild(newRow);
+        }
+
+        // Function to approve the request
+        function approveRequest() {
+            const approvalStatusCell = document.getElementById("approval_status");
+            approvalStatusCell.textContent = "Approved";
+            approvalStatusCell.style.color = "green";
+
+            // Hide the action row
+            const actionRow = document.getElementById("action_row");
+            actionRow.style.display = "none";
+        }
+
+        // Function to reject the request
+        function rejectRequest() {
+            const approvalStatusCell = document.getElementById("approval_status");
+            approvalStatusCell.textContent = "Rejected";
+            approvalStatusCell.style.color = "red";
+
+            // Hide the action row
+            const actionRow = document.getElementById("action_row");
+            actionRow.style.display = "none";
+        }
+    </script>
+</head>
+<body id="page-top">
+<nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button
+                    type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1"
+            >
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <img src="../public/img/1ID-logo.png" />
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="page-scroll" href="/">Home</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+<form name="IntelitixForm" method="post" action="ViewRequestDetail.ejs">
+    <div class="container container_body">
+        <div class="row">
+            <div class="col-md-6 center-block">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">View Access Request</h3>
+                    </div>
+                    <div class="panel-body">
+                        <table id="requestlistparent" class="table table-bordered" style="width: 100%;">
+                            <tr>
+                                <td width="40" align="center"><b>Institution Name</b></td>
+                                <td width="40" align="center"><b>Approval Status</b></td>
+                                <td width="20" align="center"><b>Actions</b></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input
+            type="hidden"
+            id="hdnRequestIndex"
+            name="hdnRequestIndex"
+            value=""
+    />
+    <input
+            type="hidden"
+            id="hdnInstitutionName"
+            name="hdnInstitutionName"
+            value=""
+    />
+    <input
+            type="hidden"
+            id="hdnContractABI"
+            name="hdnContractABI"
+            value="[{'constant':true,'inputs':[{'name':'UserAddress','type':'address'},{'name':'RequestIndex','type':'uint256'}],'name':'viewDLRequestDetail','outputs':[{'name':'RequestedBy','type':'string'},{'name':'DL_No','type':'uint256'},{'name':'DL_Name','type':'uint256'},{'name':'DL_DOB','type':'uint256'},{'name':'DL_Address','type':'uint256'},{'name':'DL_OverAll_Status','type':'uint256'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':false,'inputs':[{'name':'FullName','type':'string'},{'name':'EmailID','type':'string'},{'name':'MobileNo','type':'uint256'}],'name':'AddUser','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'},{'constant':true,'inputs':[],'name':'viewDLRequestLength','outputs':[{'name':'','type':'uint256'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':false,'inputs':[{'name':'DL_No','type':'string'},{'name':'DL_Name','type':'string'},{'name':'DL_DOB','type':'string'},{'name':'DL_Address','type':'string'}],'name':'AddUserDL','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'},{'constant':true,'inputs':[{'name':'RequestIndex','type':'uint256'}],'name':'viewUserDL','outputs':[{'name':'DL_No_S','type':'uint256'},{'name':'DL_No_V','type':'string'},{'name':'DL_Name_S','type':'uint256'},{'name':'DL_Name_V','type':'string'},{'name':'DL_DOB_S','type':'uint256'},{'name':'DL_DOB_V','type':'string'},{'name':'DL_Address_S','type':'uint256'},{'name':'DL_Address_V','type':'string'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':true,'inputs':[{'name':'RequestIndex','type':'uint256'}],'name':'viewDLRequestHeader','outputs':[{'name':'RequestedBy','type':'string'},{'name':'DL_OverAll_Status','type':'uint256'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':true,'inputs':[{'name':'UserIndex','type':'uint256'}],'name':'viewUser','outputs':[{'name':'FullName','type':'string'},{'name':'EmailID','type':'string'},{'name':'MobileNo','type':'uint256'}],'payable':false,'stateMutability':'view','type':'function'},{'constant':false,'inputs':[{'name':'RequestIndex','type':'uint256'},{'name':'DL_No','type':'uint256'},{'name':'DL_Name','type':'uint256'},{'name':'DL_DOB','type':'uint256'},{'name':'DL_Address','type':'uint256'},{'name':'DL_OverAll_Status','type':'uint256'}],'name':'UpdateRequestStatus','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'},{'constant':false,'inputs':[{'name':'RequestedBy','type':'string'},{'name':'DL_No','type':'uint256'},{'name':'DL_Name','type':'uint256'},{'name':'DL_DOB','type':'uint256'},{'name':'DL_Address','type':'uint256'},{'name':'DL_OverAll_Status','type':'uint256'}],'name':'AddDLRequest','outputs':[],'payable':false,'stateMutability':'nonpayable','type':'function'},{'inputs':[],'payable':false,'stateMutability':'nonpayable','type':'constructor'}]"
+    />
+</form>
+
+<footer class="navbar-fixed-bottom">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <!-- <div class="footer-copyright">&copy; 2024 1ID</div> -->
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Add placeholders for displaying requested document details -->
+<!-- Add placeholders for displaying requested document details -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 center-block">
+            <!-- <div class="panel panel-info"> -->
+            <!-- <div class="panel-heading">
+                <h3 class="panel-title">Requested Document Details</h3>
+            </div> -->
+            <!-- <div class="panel-body">
+                <p><strong>DL No:</strong> <span id="dl_no">ABC123456</span></p>
+                <p>
+                    <strong>DL Name:</strong> <span id="dl_name">John Doe</span>
+                </p>
+                <p>
+                    <strong>DL DOB:</strong> <span id="dl_dob">01/01/1980</span>
+                </p>
+                <p>
+                    <strong>DL Address:</strong>
+                    <span id="dl_address">123 Main St, Anytown, USA</span>
+                </p>
+            </div> -->
+        </div>
+    </div>
+</div>
+</body>
+</html>
